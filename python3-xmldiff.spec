@@ -5,30 +5,30 @@
 
 Summary:	Create diffs of XML files
 Summary(pl.UTF-8):	Tworzenie diffów plików XML
-Name:		python-xmldiff
-# keep 2.4 here for python 2.x support
-Version:	2.4
+Name:		python3-xmldiff
+Version:	3.0
 Release:	1
 License:	MIT
 Group:		Libraries/Python
 #Source0Download: https://pypi.org/simple/xmldiff/
 Source0:	https://files.pythonhosted.org/packages/source/x/xmldiff/xmldiff-%{version}.tar.gz
-# Source0-md5:	1728f65d01c5cb1f3c3838d489a1569d
+# Source0-md5:	9afc015892ff6993a97e0b481e0c69bd
 URL:		https://pypi.org/project/xmldiff/
-BuildRequires:	python-modules >= 1:2.7
-BuildRequires:	python-setuptools
+BuildRequires:	python3-build
+BuildRequires:	python3-installer
+BuildRequires:	python3-modules >= 1:3.8
+BuildRequires:	python3-setuptools >= 1:61.2
 %if %{with tests}
-BuildRequires:	python-lxml >= 3.1.0
-BuildRequires:	python-pytest
-BuildRequires:	python-six
+BuildRequires:	python3-lxml >= 3.1.0
+BuildRequires:	python3-pytest
 %endif
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.714
+BuildRequires:	rpmbuild(macros) >= 2.044
 %if %{with doc}
-BuildRequires:	python-sphinx_argparse >= 0.2.2
-BuildRequires:	sphinx-pdg-2
+BuildRequires:	python3-sphinx_argparse >= 0.2.2
+BuildRequires:	sphinx-pdg-3
 %endif
-Requires:	python-modules >= 1:2.7
+Requires:	python3-modules >= 1:3.8
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -70,27 +70,22 @@ Dokumentacja API modułu Pythona xmldiff.
 %setup -q -n xmldiff-%{version}
 
 %build
-%py_build
+%py3_build_pyproject
 
 %if %{with tests}
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
-%{__python} -m pytest tests
+%{__python3} -m pytest tests
 %endif
 
 %if %{with doc}
 %{__make} -C docs html \
-	SPHINXBUILD=sphinx-build-2
+	SPHINXBUILD=sphinx-build-3
 %endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%py_install
-
-%{__mv} $RPM_BUILD_ROOT%{_bindir}/xmldiff{,-2}
-%{__mv} $RPM_BUILD_ROOT%{_bindir}/xmlpatch{,-2}
-
-%py_postclean
+%py3_install_pyproject
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -98,10 +93,10 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc CHANGES.rst LICENSE.txt README.rst
-%attr(755,root,root) %{_bindir}/xmldiff-2
-%attr(755,root,root) %{_bindir}/xmlpatch-2
-%{py_sitescriptdir}/xmldiff
-%{py_sitescriptdir}/xmldiff-%{version}-py*.egg-info
+%attr(755,root,root) %{_bindir}/xmldiff
+%attr(755,root,root) %{_bindir}/xmlpatch
+%{py3_sitescriptdir}/xmldiff
+%{py3_sitescriptdir}/xmldiff-%{version}.dist-info
 
 %if %{with doc}
 %files apidocs
